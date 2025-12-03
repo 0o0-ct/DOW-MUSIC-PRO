@@ -94,7 +94,7 @@ def limpiar_html(texto):
 
 def formatear_duracion(segundos):
     """Convierte segundos a formato H:MM:SS"""
-    if not segundos:
+    if segundos is None:
         return "??:??"
     try:
         segundos = int(segundos)

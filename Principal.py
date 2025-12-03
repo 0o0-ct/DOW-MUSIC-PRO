@@ -2,8 +2,9 @@
 import time
 import traceback
 from config import verificar_dependencias, actualizar_herramientas, verificar_ffmpeg
-from utilidades import limpiar_pantalla, mostrar_estadisticas, preguntar_si_no
-from interfaz import (mostrar_banner, mostrar_menu_principal, seleccionar_formato, 
+from utilidades import (limpiar_pantalla, mostrar_estadisticas, preguntar_si_no,
+                       validar_url_youtube)
+from interfaz import (mostrar_banner, mostrar_menu_principal, seleccionar_formato,
                      configurar_opciones, solicitar_carpeta)
 from descargador import Descargador
 
@@ -27,7 +28,7 @@ def main():
         time.sleep(1)
 
         descargador = Descargador()
-        
+
         while True:
             limpiar_pantalla()
             mostrar_banner()
@@ -41,7 +42,7 @@ def main():
             formato = seleccionar_formato()
             opciones = configurar_opciones()
             carpeta = solicitar_carpeta()
-            
+
             # Estadísticas de sesión
             exitosas = 0
             fallidas = 0
@@ -51,24 +52,31 @@ def main():
                 while True:
                     url = input("\n🔗 URL de YouTube: ").strip()
                     if not url: break
-                    
+
+                    if not validar_url_youtube(url):
+                        print("⚠️ URL inválida. Por favor ingresa un enlace de YouTube válido.")
+                        continue
+
                     opciones['es_playlist'] = False
                     if descargador.descargar(url, carpeta, formato, opciones):
                         exitosas += 1
                     else:
                         fallidas += 1
-                        
+
                     if not preguntar_si_no("\n¿Descargar otra canción?"):
                         break
 
             elif opcion == '2': # Playlist
                 url = input("\n🔗 URL de Playlist: ").strip()
                 if url:
-                    opciones['es_playlist'] = True
-                    if descargador.descargar(url, carpeta, formato, opciones):
-                        exitosas += 1 # Cuenta como 1 operación exitosa (aunque sean muchos videos)
+                    if not validar_url_youtube(url):
+                        print("⚠️ URL inválida. Por favor ingresa un enlace de YouTube válido.")
                     else:
-                        fallidas += 1
+                        opciones['es_playlist'] = True
+                        if descargador.descargar(url, carpeta, formato, opciones):
+                            exitosas += 1 # Cuenta como 1 operación exitosa (aunque sean muchos videos)
+                        else:
+                            fallidas += 1
 
             elif opcion == '3': # Múltiple
                 print("\nIngresa las URLs una por una (deja vacío para terminar)")
@@ -76,8 +84,13 @@ def main():
                 while True:
                     url = input(f"URL #{len(urls) + 1}: ").strip()
                     if not url: break
+
+                    if not validar_url_youtube(url):
+                        print("⚠️ URL inválida. Se omitirá.")
+                        continue
+
                     urls.append(url)
-                
+
                 opciones['es_playlist'] = False
                 for i, url in enumerate(urls, 1):
                     print(f"\nProcesando {i}/{len(urls)}")
