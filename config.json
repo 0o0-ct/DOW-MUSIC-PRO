@@ -1,0 +1,8 @@
+{
+    "download_folder": "Romance",
+    "format": "flac",
+    "download_lyrics": true,
+    "download_thumbnail": true,
+    "max_workers": 4,
+    "cookies_browser": "none"
+}
