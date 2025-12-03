@@ -67,7 +67,9 @@ def verificar_dependencias():
         'yt_dlp': 'yt-dlp',
         'mutagen': 'mutagen',
         'requests': 'requests',
-        'PIL': 'Pillow'
+        'PIL': 'Pillow',
+        'keyring': 'keyring',
+        'filelock': 'filelock'
     }
     
     faltantes = []
